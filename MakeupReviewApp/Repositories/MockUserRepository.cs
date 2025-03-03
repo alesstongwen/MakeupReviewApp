@@ -68,5 +68,23 @@ namespace MakeupReviewApp.Repositories
 
             return profile;
         }
+
+        public void AddUser(User newUser)
+        {
+            // Ensure user doesn't already exist
+            if (_users.Any(u => u.Email == newUser.Email))
+            {
+                throw new Exception("User with this email already exists.");
+            }
+
+            // Assign a new ID
+            newUser.Id = _users.Count + 1;
+
+            // Add user to the list
+            _users.Add(newUser);
+
+            Console.WriteLine($"[DEBUG] New user added: {newUser.FullName} ({newUser.Email})");
+        }
+
     }
 }

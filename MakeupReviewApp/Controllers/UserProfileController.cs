@@ -34,5 +34,6 @@ namespace MakeupReviewApp.Controllers
 
             return View(userProfile);
         }
+
     }
 }

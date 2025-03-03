@@ -81,5 +81,33 @@ namespace MakeupReviewApp.Controllers
             return View(userProfile);
 
         }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Register(User newUser)
+        {
+            if (string.IsNullOrEmpty(newUser.Email) || string.IsNullOrEmpty(newUser.Password) || string.IsNullOrEmpty(newUser.FullName))
+            {
+                ModelState.AddModelError("", "All fields are required.");
+                return View();
+            }
+
+            try
+            {
+                _userRepo.AddUser(newUser);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View();
+            }
+
+            return RedirectToAction("Login");
+        }
+
     }
 }
