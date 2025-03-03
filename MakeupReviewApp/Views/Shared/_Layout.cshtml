@@ -35,6 +35,9 @@
                                 <span class="nav-link">Welcome, @User.Identity.Name</span>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" asp-controller="UserProfile" asp-action="Profile">Profile</a>
+                            </li>
+                            <li class="nav-item">
                                 <form method="post" asp-controller="Account" asp-action="Logout" class="form-inline">
                                     <button type="submit" class="btn btn-outline-danger">Logout</button>
                                 </form>

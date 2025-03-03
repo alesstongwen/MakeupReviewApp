@@ -10,7 +10,13 @@ namespace MakeupReviewApp.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly MockUserRepository _userRepo = new MockUserRepository();
+        private readonly MockUserRepository _userRepo;
+
+        public AccountController(MockUserRepository userRepo)
+        {
+            _userRepo = userRepo;
+        }
+
 
         public IActionResult Login()
         {
@@ -19,6 +25,12 @@ namespace MakeupReviewApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(User loginUser)
         {
+            if (loginUser == null || string.IsNullOrEmpty(loginUser.Email) || string.IsNullOrEmpty(loginUser.Password))
+            {
+                ModelState.AddModelError("", "Email and Password are required.");
+                return View();
+            }
+
             var user = _userRepo.ValidateUser(loginUser.Email, loginUser.Password);
             if (user == null)
             {
@@ -42,13 +54,32 @@ namespace MakeupReviewApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
-
-
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
+        }
+
+        public IActionResult Profile()
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.Email); 
+
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var userProfile = _userRepo.GetUserProfileByEmail(userEmail);
+            if (userProfile == null)
+            {
+                return NotFound("User profile not found.");
+            }
+
+            Console.WriteLine($"[DEBUG] User.Identity.Name: {User.Identity.Name}");
+            Console.WriteLine($"[DEBUG] User Email: {User.FindFirstValue(ClaimTypes.Email)}");
+
+            return View(userProfile);
+
         }
     }
 }

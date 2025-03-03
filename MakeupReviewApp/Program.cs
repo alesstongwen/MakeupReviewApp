@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<MockReviewRepository>(); // Ensures all controllers use the same instance
 builder.Services.AddSingleton<MockProductRepository>();
+builder.Services.AddSingleton<MockUserRepository>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

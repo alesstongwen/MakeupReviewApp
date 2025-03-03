@@ -19,6 +19,11 @@ namespace MakeupReviewApp.Repositories
             return _reviews;
         }
 
+        public List<Review> GetReviewsByUser(string userName)
+        {
+            return _reviews.Where(r => r.UserName == userName).ToList();
+        }
+
         public List<Review> GetReviewsByProductId(int productId)
         {
             return _reviews.Where(r => r.ProductId == productId).ToList();
