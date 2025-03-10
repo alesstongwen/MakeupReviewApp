@@ -5,6 +5,7 @@
         public User User { get; set; } 
         public string? ProfilePicture { get; set; } 
         public DateTime JoinDate { get; set; } = DateTime.Now; 
-        public List<Review> Reviews { get; set; } = new List<Review>(); 
+        public List<Review> Reviews { get; set; } = new List<Review>();
+        public List<Product> Wishlist { get; set; } = new List<Product>();
     }
 }

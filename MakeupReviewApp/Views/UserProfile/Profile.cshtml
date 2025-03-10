@@ -30,6 +30,28 @@
     }
     else
     {
-        <p>You have not written any reviews yet.</p>
+        <p>No reviews yet.</p>
+    }
+
+    <h3 class="mt-5">Your Wishlist</h3>
+    @if (Model.Wishlist.Any())
+    {
+        <ul class="list-group">
+            @foreach (var product in Model.Wishlist)
+            {
+                <li class="list-group-item">
+                    <strong>@product.Name</strong>
+                    <p>@product.Description</p>
+                    <form asp-action="RemoveFromWishlist" asp-controller="Wishlist" method="post">
+                        <input type="hidden" name="productId" value="@product.Id" />
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No items in wishlist.</p>
     }
 </div>
