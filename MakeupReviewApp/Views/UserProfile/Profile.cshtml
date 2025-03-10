@@ -40,7 +40,7 @@
             @foreach (var product in Model.Wishlist)
             {
                 <li class="list-group-item">
-                    <strong>@product.Name</strong>
+                    <strong><a href="@Url.Action("Details", "Product", new { id = product.Id })">@product.Name</a></strong>
                     <p>@product.Description</p>
                     <form asp-action="RemoveFromWishlist" asp-controller="Wishlist" method="post">
                         <input type="hidden" name="productId" value="@product.Id" />
