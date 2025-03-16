@@ -1,53 +1,36 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using MakeupReviewApp.Services;
 using MakeupReviewApp.Models;
-using MakeupReviewApp.Repositories;
 
-public class ReviewController : Controller
+namespace MakeupReviewApp.Controllers
 {
-    private readonly MockReviewRepository _reviewRepo = new MockReviewRepository();
-
     [Authorize]
-    public IActionResult Create(int productId)
+    public class ReviewController : Controller
     {
-        return View(new Review { ProductId = productId });
-    }
-    [HttpPost]
-    [Authorize]
-    public IActionResult Create(Review review)
-    {
-        var userName = User.FindFirstValue(ClaimTypes.Name);
+        private readonly ReviewService _reviewService;
 
-        // ✅ Manually assign UserName before validation
-        review.UserName = userName ?? "Unknown User"; // Avoid validation failure
-
-        if (string.IsNullOrEmpty(review.UserName) || review.UserName == "Unknown User")
+        public ReviewController(ReviewService reviewService)
         {
-            ModelState.AddModelError("UserName", "UserName is required but was not found.");
+            _reviewService = reviewService;
         }
 
-        // 🔥 Debugging: Log UserName and ModelState Errors
-        Console.WriteLine($"[DEBUG] UserName Assigned: {review.UserName}");
-
-        if (!ModelState.IsValid)
+        [Authorize]
+        public IActionResult Create(int productId)
         {
-            Console.WriteLine("[ERROR] ModelState is not valid.");
-            foreach (var error in ModelState)
+            return View(new Review { ProductId = productId });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Create(Review review)
+        {
+            if (ModelState.IsValid)
             {
-                foreach (var subError in error.Value.Errors)
-                {
-                    Console.WriteLine($"[ERROR] {error.Key}: {subError.ErrorMessage}");
-                }
+                _reviewService.AddReview(review);
+                return RedirectToAction("Details", "Product", new { id = review.ProductId });
             }
-
-            return View(review); // Return the form with validation messages
+            return View(review);
         }
-
-        _reviewRepo.AddReview(review);
-        Console.WriteLine($"[DEBUG] New Review by {review.UserName} - {review.Comment}");
-
-        return RedirectToAction("Details", "Product", new { id = review.ProductId });
     }
-
 }

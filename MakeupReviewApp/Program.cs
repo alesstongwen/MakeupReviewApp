@@ -1,13 +1,19 @@
 using MakeupReviewApp.Repositories;
+using MakeupReviewApp.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-builder.Services.AddSingleton<MockReviewRepository>(); // Ensures all controllers use the same instance
+// Register repositories
+builder.Services.AddSingleton<MockReviewRepository>();
 builder.Services.AddSingleton<MockProductRepository>();
 builder.Services.AddSingleton<MockUserRepository>();
 
+// Register services
+builder.Services.AddScoped<WishlistService>();
+builder.Services.AddScoped<ReviewService>();
+
+// Configure authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -27,7 +33,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -37,7 +42,7 @@ app.UseStaticFiles();
 app.UseSession();
 app.UseRouting();
 
-app.UseAuthentication(); 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
@@ -46,10 +51,5 @@ app.UseEndpoints(endpoints =>
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
 });
-
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

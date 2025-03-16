@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MakeupReviewApp.Repositories;
+using MakeupReviewApp.Models.ViewModels;
 
 namespace MakeupReviewApp.Controllers
 {
@@ -10,7 +11,6 @@ namespace MakeupReviewApp.Controllers
     {
         private readonly MockUserRepository _userRepo;
 
-        // ✅ Inject MockUserRepository
         public UserProfileController(MockUserRepository userRepo)
         {
             _userRepo = userRepo;
@@ -20,7 +20,6 @@ namespace MakeupReviewApp.Controllers
         {
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
 
-            // ✅ Ensure user is logged in
             if (string.IsNullOrEmpty(userEmail))
             {
                 return RedirectToAction("Login", "Account");
@@ -34,6 +33,5 @@ namespace MakeupReviewApp.Controllers
 
             return View(userProfile);
         }
-
     }
 }

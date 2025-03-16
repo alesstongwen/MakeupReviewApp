@@ -1,20 +1,18 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MakeupReviewApp.Repositories;
+using MakeupReviewApp.Services;
 
 namespace MakeupReviewApp.Controllers
 {
     [Authorize]
     public class WishlistController : Controller
     {
-        private readonly MockUserRepository _userRepo;
-        private readonly MockProductRepository _productRepo;
+        private readonly WishlistService _wishlistService;
 
-        public WishlistController(MockUserRepository userRepo, MockProductRepository productRepo)
+        public WishlistController(WishlistService wishlistService)
         {
-            _userRepo = userRepo;
-            _productRepo = productRepo;
+            _wishlistService = wishlistService;
         }
 
         [HttpPost]
@@ -26,21 +24,10 @@ namespace MakeupReviewApp.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var userProfile = _userRepo.GetUserProfileByEmail(userEmail);
-            if (userProfile == null)
+            var result = _wishlistService.AddToWishlist(userEmail, productId);
+            if (!result)
             {
-                return NotFound("User profile not found.");
-            }
-
-            var product = _productRepo.GetProductById(productId);
-            if (product == null)
-            {
-                return NotFound("Product not found.");
-            }
-
-            if (!userProfile.Wishlist.Any(p => p.Id == productId))
-            {
-                userProfile.Wishlist.Add(product);
+                return NotFound("User profile or product not found.");
             }
 
             return RedirectToAction("Profile", "UserProfile");
@@ -55,16 +42,10 @@ namespace MakeupReviewApp.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var userProfile = _userRepo.GetUserProfileByEmail(userEmail);
-            if (userProfile == null)
+            var result = _wishlistService.RemoveFromWishlist(userEmail, productId);
+            if (!result)
             {
                 return NotFound("User profile not found.");
-            }
-
-            var product = userProfile.Wishlist.FirstOrDefault(p => p.Id == productId);
-            if (product != null)
-            {
-                userProfile.Wishlist.Remove(product);
             }
 
             return RedirectToAction("Profile", "UserProfile");
